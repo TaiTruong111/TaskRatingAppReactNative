@@ -114,15 +114,21 @@ function Task ({route, navigation}) {
   // console.log(task)
   // console.log(route.params)
   // route.params.returnedData({title : taskTitle, detail : taskDetail, isNeeded : task.isNeeded, isWanted : task.isWanted})
-  route.params.dosthe({title : taskTitle, detail : taskDetail, isNeeded : task.isNeeded, isWanted : task.isWanted, id : task.id})
   
+  const handleEditing = () => {
+    route.params.dosthe({title : taskTitle, detail : taskDetail, isNeeded : task.isNeeded, isWanted : task.isWanted, id : task.id})
+  }
+  const onHandleEditing = (text) =>{
+    setTaskTitle(text)
+    handleEditing()
+  }
   return (
     <View style = {{borderRadius : 10, backgroundColor : 'white', flex : 1, margin : 10}}>
       <TextInput
         maxLength = {36}
         defaultValue = {taskTitle}
         // onChangeText = {text => setTaskTitle(text)}
-        onEndEditing = {(e) => setTaskTitle(e.nativeEvent.text)}
+        onEndEditing = {(e) => onHandleEditing(e.nativeEvent.text)}
         style = {{padding : 5}}/>
       <View style = {{borderWidth : 0.5}}/>
       <TextInput
@@ -286,10 +292,6 @@ function ListTaskAsLine ({tasks}) {
 function Overview ({route, navigation}) {
 
   const tasks = route.params.tasks
-  // const wantedList = tasks.filter(e => !e.isNeeded && e.isWanted)
-  // const neededList = tasks.filter(e => e.isNeeded && !e.isWanted)
-  // const importantList = tasks.filter(e => e.isNeeded && e.isWanted)
-  // const nonImportantList = tasks.filter(e => !e.isNeeded && !e.isWanted)
   const [wantedList, setWantedList] = useState(tasks.filter(e => !e.isNeeded && e.isWanted))
   const [neededList, setNeededList] = useState(tasks.filter(e => e.isNeeded && !e.isWanted))
   const [importantList, setImportantList] = useState(tasks.filter(e => e.isNeeded && e.isWanted))
@@ -299,18 +301,13 @@ function Overview ({route, navigation}) {
   //   console.log('111')
   //   console.log(nonImportantList)  });
   route.params.original = changeOriginal = (data) => {
-    // console.log('start')
-    // console.log(data)
-    // console.log(!data.isNeeded && !data.isWanted)
     if(!data.isNeeded && !data.isWanted)
     {
-      // console.log('here3')
       onEditingItem(nonImportantList, data)
-      // setNonImportantList(data)
     }
   }
-  // console.log(route.params)
-  function onEditingItem (list, data) {
+  
+  const onEditingItem = (list, data) => {
     const newData = list.map(item =>{
       if(item.id == data.id){
         item.taskTitle = data.title
